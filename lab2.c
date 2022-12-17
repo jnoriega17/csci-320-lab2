@@ -1,4 +1,4 @@
-#include <stdio.h>
+##include <stdio.h>
 #include <pthread.h>
 #include <stdlib.h>
 #include "lab2.h"
@@ -25,12 +25,13 @@ int** read_board_from_file(char* filename){
 void * checkRow(void*param){ /* checks 1-9 in row */
     param_struct*params=(param_struct*) param;
     int checkArray[9]={0};
-    int row=params->rowStart;
-    int col=params->colStart;
+    int row=params->starting_row;
+    int col=params->starting_col;
 
         int i;
-        for(i=0;j<9;i++){
-            int(num<1||num>9||checkArray[num-1]==1){
+        for(i=0;i<9;i++){
+            int num=sudoku_board[row][i];
+            if(num<1 || num>9 || checkArray[num-1]==1){
                 pthread_exit(NULL);}
             else{
                 checkArray[num-1]=1;
@@ -43,11 +44,11 @@ void * checkRow(void*param){ /* checks 1-9 in row */
 void * checkCol(void*param){ /*checks 1-9 in column*/
     param_struct*params=(param_struct*) param;
     int checkArray[9]={0};
-    int row=params->rowStart;
-    int col=params->colStart;
+    int row=params->starting_row;
+    int col=params->starting_col;
 
         int i;
-        for(i=0;j<9;i++){
+        for(i=0;i<9;i++){
             int num=sudoku_board[col][i];
             if(num>9||num<1||checkArray[num-1]==1){
                 pthread_exit(NULL);}
@@ -62,8 +63,8 @@ void * checkCol(void*param){ /*checks 1-9 in column*/
 void * checkValidGrid(void*param){ /*checks 1-9 in array*/
     param_struct*params=(param_struct*) param;
     int checkArray[9]={0};
-    int row=params->rowStart;
-    int col=params->colStart;
+    int row=params->starting_row;
+    int col=params->starting_col;
 
     for(int i=row; i<row+3; i++){
         for(int j=col; j<col+3; j++)
@@ -93,21 +94,21 @@ int is_board_valid(){
     for(int i=0; i<ROW_SIZE; i++){
         for(int j=0; j<COL_SIZE; j++){
             if(i%3==0&&j%3==0){
-                param_struct*gridWorker=(param_struct*) mallac(sizeof(param_struct));
-                gridWorker->rowStart=i;
-                gridWorker->colStart=j;
+                param_struct*gridWorker=(param_struct*) malloc(sizeof(param_struct));
+                gridWorker->starting_row=i;
+                gridWorker->starting_col=j;
                 pthread_create(&tid[t_index++], NULL, checkValidGrid, gridWorker);
             }
             if(i==0){
-                param_struct*colWorker=(param_struct*) mallac(sizeof(param_struct));
-                colWorker->rowStart=i;
-                colWorker->colStart=j;
+                param_struct*colWorker=(param_struct*) malloc(sizeof(param_struct));
+                colWorker->starting_row=i;
+                colWorker->starting_col=j;
                 pthread_create(&tid[t_index++], NULL, checkCol, colWorker);
             }
             if(j==0){
-                param_struct*rowWorker=(param_struct*) mallac(sizeof(param_struct));
-                rowWorker->rowStart=i;
-                rowWorker->colStart=j;
+                param_struct*rowWorker=(param_struct*) malloc(sizeof(param_struct));
+                rowWorker->starting_row=i;
+                rowWorker->starting_col=j;
                 pthread_create(&tid[t_index++], NULL, checkRow, rowWorker);
             }
         }
